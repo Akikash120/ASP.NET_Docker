@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nzworks-api
+  labels:
+    app: nzworks-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: nzworks-api
+  template:
+    metadata:
+      labels:
+        app: nzworks-api
+    spec:
+      containers:
+      - name: nzworks-api
+        image: leocontainer.azurecr.io/asp.net_with_dockercontainerisation.git:212
+        ports:
+        - containerPort: 80
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        resources:
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nzworks-api-service
+spec:
+  selector:
+    app: nzworks-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+  type: LoadBalancer
